@@ -1,6 +1,7 @@
 # noinspection PyUnresolvedReferences
 from multiprocessing import Process, Queue, Pipe
-
+import config
+import zmq
 from time import sleep
 
 class BaseMonitor(Process):
@@ -19,5 +20,11 @@ class BooleanMonitor(BaseMonitor):
 
     def run(self):
         while True:
-            self.pipe = ([i for func in self.data_source for i in func()])
+            context = zmq.Context()
+            print("Connecting to server with ports %s" % config.port)
+            socket = context.socket(zmq.REQ)
+            socket.connect ("tcp://localhost:%s" % config.port)
+            socket.send([i for func in self.data_source for i in func()])
+            message = socket.recv()
+            print("Received reply [", message, "]")
             sleep(self.query_interval)
