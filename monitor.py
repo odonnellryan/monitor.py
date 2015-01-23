@@ -1,4 +1,6 @@
-from multiprocessing import Process, Queue
+# noinspection PyUnresolvedReferences
+from multiprocessing import Process, Queue, Pipe
+
 from time import sleep
 
 class BaseMonitor(Process):
@@ -8,16 +10,14 @@ class BaseMonitor(Process):
         self.query_interval = 0
 
 class BooleanMonitor(BaseMonitor):
-    def __init__(self, data_queue):
-        self.data_queue = data_queue
+    def __init__(self):
+        self.pipe = None
         super().__init__()
 
-    def register(self, data_source: (str, bool)):
+    def register(self, data_source):
         self.data_source.append(data_source)
 
     def run(self):
         while True:
-            if not self.data_queue.empty(): self.data_queue.get()
-            self.data_queue.put([i for func in self.data_source for i in func()])
-            print(self.data_source)
+            self.pipe = ([i for func in self.data_source for i in func()])
             sleep(self.query_interval)
