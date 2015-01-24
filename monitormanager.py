@@ -1,32 +1,24 @@
 # noinspection PyUnresolvedReferences
-from multiprocessing.sharedctypes import Array
-# noinspection PyUnresolvedReferences
-from multiprocessing import Manager
-import zmq
-import json
-import config
+from multiprocessing import Manager, Pipe
 
 class MonitorManager:
     def __init__(self):
         self.monitors = {}
 
-    def server(port=config.port):
-        context = zmq.Context()
-        socket = context.socket(zmq.REP)
-        socket.bind("tcp://*:%s" % port)
-        print("Running server on port: ", port)
-        message = socket.recv()
-        print("Received request #%s: %s" % (reqnum, message))
-        socket.send("World from %s" % port)
-
     def register_monitor(self, monitor):
-        # TODO: use zmq to manage info from various processes
-        monitor.data = self.data
-        self.monitors[monitor] = monitor.data
+        parent_pipe, child_pipe = Pipe()
+        monitor.pipe = child_pipe
+        self.monitors[monitor] = parent_pipe
 
     def run(self):
         for monitor in self.monitors:
             monitor.start()
 
     def get(self, monitor):
+        self.monitors[monitor].send('continue')
         return self.monitors[monitor].recv()
+
+    def stop(self, monitor):
+        self.monitors[monitor].send('stop')
+        monitor.terminate()
+        self.monitors[monitor].close()

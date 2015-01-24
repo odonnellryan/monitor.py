@@ -24,7 +24,8 @@ man.register_monitor(s_monitor)
 
 if __name__ == '__main__':
     man.run()
-    time.sleep(10)
-    while True:
-        print(man.get(email_monitor))
-        print(man.get(s_monitor))
+    time.sleep(1)
+    print(man.get(email_monitor))
+    print(man.get(s_monitor))
+    print(man.get(s_monitor))
+    print(man.stop(s_monitor))
