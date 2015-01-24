@@ -5,7 +5,7 @@ class MonitorManager:
     def __init__(self):
         self.monitors = {}
 
-    def register_monitor(self, monitor):
+    def register(self, monitor):
         parent_pipe, child_pipe = Pipe()
         monitor.pipe = child_pipe
         self.monitors[monitor] = parent_pipe

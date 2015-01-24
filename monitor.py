@@ -1,7 +1,8 @@
 # noinspection PyUnresolvedReferences
-from multiprocessing import Process, Queue, Pipe
+from multiprocessing import Process, Pipe
 import threading
 from time import sleep
+
 
 class BaseMonitor(Process):
     def __init__(self):

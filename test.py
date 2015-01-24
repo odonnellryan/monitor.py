@@ -1,10 +1,10 @@
 # noinspection PyUnresolvedReferences
-from monitor import BooleanMonitor, BaseMonitor, Queue
+from monitor import BooleanMonitor, BaseMonitor
 import monitormanager
 import time
 
 def test_func():
-    return [("testing", True), ("1", False)]
+    return [(1,2), ('a', 'b')]
 
 def test_func2():
     return [("43", True), ("2", False)]
@@ -19,8 +19,8 @@ s_monitor = BooleanMonitor()
 s_monitor.query_interval = 1
 s_monitor.register(test_func2)
 
-man.register_monitor(email_monitor)
-man.register_monitor(s_monitor)
+man.register(email_monitor)
+man.register(s_monitor)
 
 if __name__ == '__main__':
     man.run()
