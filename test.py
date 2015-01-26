@@ -1,6 +1,6 @@
 # noinspection PyUnresolvedReferences
 from monitor import BooleanMonitor, BaseMonitor
-import monitormanager
+import monitor_manager
 import time
 
 def test_func():
@@ -9,7 +9,7 @@ def test_func():
 def test_func2():
     return [("43", True), ("2", False)]
 
-man = monitormanager.MonitorManager()
+man = monitor_manager.MonitorManager()
 
 email_monitor = BooleanMonitor()
 email_monitor.query_interval = 5
@@ -24,8 +24,6 @@ man.register(s_monitor)
 
 if __name__ == '__main__':
     man.run()
-    time.sleep(1)
-    print(man.get(email_monitor))
-    print(man.get(s_monitor))
-    print(man.get(s_monitor))
-    print(man.stop(s_monitor))
+    while True:
+        print(man.get(email_monitor))
+        print(man.get(s_monitor))

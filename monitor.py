@@ -16,7 +16,10 @@ class BaseMonitor(Process):
     def job(self):
         while self._run:
             # initiate!
+            # if this gets hung for whatever reason we'll return None
+            self.data = None
             self.data = [i for func in self.data_source for i in func()]
+            # using sleep instead of thread.Timer, we don't need a new thread for each time this is run.
             sleep(self.query_interval)
 
     def handle_pipe(self):
