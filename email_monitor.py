@@ -7,10 +7,11 @@ import json
 folder_id = {'Old': 'AAMkADlmY2IwYTFkLWMxNDAtNGIyNy04NDM0LTJhMDQ4NTc2YmYyZAAuAAAAAAAofRrKZvRgQ4RoTUPPf3uJAQDvpmjL_PTZTLP1WRdlp2cYAAAB6fBfAAA='}
 
 class BackupSchedule:
-
+    pass
 
 class BackupMonitor:
     def __init__(self):
+        pass
 
 def get_emails():
     r = requests.get('https://outlook.office365.com/api/v1.0/me/messages', auth=(config.o365['email'], config.o365['password']))
@@ -23,9 +24,9 @@ def move_emails(emails):
     :return: error or
     """
     for email in emails['value']:
-        data = {'DestinationId': folder_id['Old']}
+        data = json.dumps({'DestinationId': folder_id['Old']})
         headers = {'Content-Type': 'Application/Json'}
-        r = requests.post(email['@odata.id'] + '/move', data=json.dumps(data),
+        r = requests.post(email['@odata.id'] + '/move', data=data,
                          auth=(config.o365['email'], config.o365['password']), headers=headers)
         return r.json()
 
