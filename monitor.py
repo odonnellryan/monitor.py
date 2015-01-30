@@ -5,6 +5,10 @@ from time import sleep
 
 
 class BaseMonitor(Process):
+    """
+    sets up some information needed for any base monitor
+    inherits from Process
+    """
     def __init__(self):
         super().__init__()
         self.data_source = []
@@ -31,10 +35,17 @@ class BaseMonitor(Process):
 
 
 class BooleanMonitor(BaseMonitor):
+    """
+    monitor that returns either data or false.
+    """
     def __init__(self):
         super().__init__()
 
     def register(self, data_source):
+        """
+        each monitor can have several "jobs." one email monitor can monitor multiple clients for a single mailbox,
+        for example. here we register the jobs the monitor will run.
+        """
         self.data_source.append(data_source)
 
     def run(self):
