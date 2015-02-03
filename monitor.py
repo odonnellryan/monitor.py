@@ -30,7 +30,9 @@ class BaseMonitor(Process):
                 # if this gets hung for whatever reason we'll return None
                 self.data = None
                 self.data = [i for func in self.data_source for i in func()]
-                # using sleep instead of thread.Timer, we don't need a new thread for each time this is run.
+                # only really want to store this information if we need it?
+                if self.max_run_count: self._run_count += 1
+            # using sleep instead of thread.Timer, we don't need a new thread for each time this is run.
             sleep(self.query_interval)
 
     def handle_pipe(self):
