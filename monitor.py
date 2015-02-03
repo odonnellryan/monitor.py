@@ -36,7 +36,7 @@ class BaseMonitor(Process):
 
 class BooleanMonitor(BaseMonitor):
     """
-    monitor that returns either data or false.
+    monitor that returns data or false.
     """
     def __init__(self):
         super().__init__()

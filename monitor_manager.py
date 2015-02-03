@@ -18,10 +18,8 @@ class MonitorManager:
         monitor.pipe = child_pipe
         self.monitors[monitor] = parent_pipe
 
-    def reload(self):
+    def start(self):
         for monitor in self.monitors:
-            monitor.send('stop')
-            monitor.stop()
             monitor.start()
 
     def get(self, monitor):
@@ -35,3 +33,7 @@ class MonitorManager:
         self.monitors[monitor].send('stop')
         monitor.terminate()
         self.monitors[monitor].close()
+
+    def stop_all(self):
+        for monitor in self.monitors:
+            monitor.terminate()

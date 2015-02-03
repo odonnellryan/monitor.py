@@ -23,7 +23,9 @@ man.register(email_monitor)
 man.register(s_monitor)
 
 if __name__ == '__main__':
-    man.reload()
-    while True:
-        print(man.get(email_monitor))
-        print(man.get(s_monitor))
+    man.start()
+    print(man.get(email_monitor))
+    print(man.get(s_monitor))
+    man.stop_all()
+    #time.sleep(1)
+
