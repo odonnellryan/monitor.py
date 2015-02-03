@@ -2,7 +2,7 @@
 from multiprocessing import Process, Pipe
 import threading
 from time import sleep
-
+import datetime
 
 class BaseMonitor(Process):
     """
@@ -16,14 +16,21 @@ class BaseMonitor(Process):
         self.data = None
         self._run = True
         self.pipe = None
+        self._last_run = None
+        self.max_run_count = None
+        self._run_count = 0
 
     def job(self):
         while self._run:
-            # initiate!
-            # if this gets hung for whatever reason we'll return None
-            self.data = None
-            self.data = [i for func in self.data_source for i in func()]
-            # using sleep instead of thread.Timer, we don't need a new thread for each time this is run.
+            # this is here so if we want a job to only run x times a day
+            if not self.last_run or self.last_run < datetime.datetime.today():
+                self._run_count = 0
+            if not self.max_run_count or self._run_count <= self.max_run_count:
+                # initiate!
+                # if this gets hung for whatever reason we'll return None
+                self.data = None
+                self.data = [i for func in self.data_source for i in func()]
+                # using sleep instead of thread.Timer, we don't need a new thread for each time this is run.
             sleep(self.query_interval)
 
     def handle_pipe(self):

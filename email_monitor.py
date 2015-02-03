@@ -40,30 +40,44 @@ class BackupMonitor:
         """
         r = requests.get('https://outlook.office365.com/api/v1.0/me/messages',
                          auth=(config.o365['email'], config.o365['password']))
-        return r.json()
+        return r.json()['value']
 
     def move_emails(self, emails):
         """
         Move each email in `emails` into the Old folder.
         """
         response = []
-        for email in emails['value']:
+        for email in emails:
             data = json.dumps({'DestinationId': folder_ids['Old']})
             headers = {'Content-Type': 'Application/Json'}
             r = requests.post(email['@odata.id'] + '/move', data=data,
                               auth=(config.o365['email'], config.o365['password']), headers=headers)
             response.append(r.json())
 
+    def get_jobs(self):
+        day = get_previous_day().lower()
+        jobs = self.schedule['daily'] + self.schedule[day]
+        return jobs
+
+    def process_emails(self):
+        processed_emails = []
+        jobs = self.get_jobs()
+        emails = self.get_emails()
+        processed_jobs = {job: None for job in jobs}
+        for email in emails:
+            for job in jobs:
+                if job in email['Subject']:
+                    processed_emails.append(email)
+                    processed_jobs[job] = email['Body']['Content']
+        return processed_emails, processed_jobs
+
     def run(self):
         # we only care if this runs once a day
-        if not self.last_run or self.last_run < datetime.datetime.today():
-            day = get_previous_day()
-            processed_emails = []
-            emails = self.get_emails()
-            for email in emails['value']:
-                print(email)
+
+            emails, jobs = self.process_emails()
             self.last_run = datetime.datetime.today()
-        pass
+            return jobs
+
 
 
 def get_folders():
@@ -77,8 +91,15 @@ def get_folders():
 acg_schedule = weekly_schedule('backup_jobs/acg.json')
 
 email_monitor = BackupMonitor(acg_schedule)
-emails = email_monitor.get_emails()
-for i in emails['value']:
-    print(i)
-print(emails)
+#print(email_monitor.get_jobs())
+#emails = email_monitor.get_emails()
+#print(emails)
+# emails, jobs = email_monitor.process_emails()
+# print(jobs)
+
+if not True or not True:
+    print("test")
+#for i in emails['value']:
+#    print(i)
+#print(emails)
 #email_monitor.run()
