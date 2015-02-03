@@ -96,9 +96,6 @@ email_monitor = BackupMonitor(acg_schedule)
 #print(emails)
 # emails, jobs = email_monitor.process_emails()
 # print(jobs)
-
-if not True or not True:
-    print("test")
 #for i in emails['value']:
 #    print(i)
 #print(emails)
