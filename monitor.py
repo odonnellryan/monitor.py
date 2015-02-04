@@ -23,15 +23,16 @@ class BaseMonitor(Process):
     def job(self):
         while self._run:
             # this is here so if we want a job to only run x times a day
-            if not self.last_run or self.last_run < datetime.datetime.today():
+            if not self._last_run or self._last_run < datetime.date.today():
                 self._run_count = 0
-            if not self.max_run_count or self._run_count <= self.max_run_count:
+            if not self.max_run_count or self._run_count < self.max_run_count:
                 # initiate!
                 # if this gets hung for whatever reason we'll return None
                 self.data = None
                 self.data = [i for func in self.data_source for i in func()]
                 # only really want to store this information if we need it?
                 if self.max_run_count: self._run_count += 1
+                self._last_run = datetime.date.today()
             # using sleep instead of thread.Timer, we don't need a new thread for each time this is run.
             sleep(self.query_interval)
 
@@ -43,7 +44,7 @@ class BaseMonitor(Process):
             self.pipe.send(self.data)
 
 
-class BooleanMonitor(BaseMonitor):
+class SimpleMonitor(BaseMonitor):
     """
     monitor that returns data or false.
     """

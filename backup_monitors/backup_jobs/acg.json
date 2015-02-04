@@ -1,5 +1,6 @@
 {
-    "daily" : ["ACGCORE (Daily)", "NETSTORAGE General (Daily)", "ACGDC (Daily)", "ACGEX (Daily)"],
+    "daily" : ["ACGDC-Weekly Backup ACGDC-Daily Backup", "ACGCore-Weekly Backups-Daily Backup",
+        "ACGEX-Weekly Backups ACGEX-Daily Backup"],
     "monday" : ["(M) W7MLANGLEY", "(M) W7MFEBBI"],
     "wednesday" : ["(W) NETSTORAGE USERS"],
     "tuesday" : ["(T) OLYMPUS"],

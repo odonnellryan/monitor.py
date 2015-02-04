@@ -1,4 +1,4 @@
-from monitor import BooleanMonitor, BaseMonitor
+from monitor import SimpleMonitor, BaseMonitor
 import monitor_manager
 import requests
 import config
@@ -7,7 +7,6 @@ import datetime
 
 # scope of this project is weekly jobs
 # the idea is to also check on the backup jobs manually from time-to-time
-# TODO: make the backup jobs config files! (JSON probably)
 
 folder_ids = {
     'Old': 'AAMkADlmY2IwYTFkLWMxNDAtNGIyNy04NDM0LTJhMDQ4NTc2YmYyZAAuAAAAAAAofRrKZvRgQ4RoTUPPf3uJAQDvpmjL_PTZTLP1WRdlp2cYAAAB6fBfAAA='}
@@ -31,7 +30,6 @@ class BackupMonitor:
     """
 
     def __init__(self, schedule):
-        self.last_run = None
         self.schedule = schedule
 
     def get_emails(self):
@@ -53,13 +51,20 @@ class BackupMonitor:
             r = requests.post(email['@odata.id'] + '/move', data=data,
                               auth=(config.o365['email'], config.o365['password']), headers=headers)
             response.append(r.json())
+        return response
 
     def get_jobs(self):
+        """
+        Get today's backup jobs
+        """
         day = get_previous_day().lower()
         jobs = self.schedule['daily'] + self.schedule[day]
         return jobs
 
     def process_emails(self):
+        """
+        goes through the emails and builds the return dictionary.
+        """
         processed_emails = []
         jobs = self.get_jobs()
         emails = self.get_emails()
@@ -69,15 +74,12 @@ class BackupMonitor:
                 if job in email['Subject']:
                     processed_emails.append(email)
                     processed_jobs[job] = email['Body']['Content']
-        return processed_emails, processed_jobs
+        return processed_emails, [(k,v) for k,v in processed_jobs.items()]
 
     def run(self):
-        # we only care if this runs once a day
-
-            emails, jobs = self.process_emails()
-            self.last_run = datetime.datetime.today()
-            return jobs
-
+        emails, jobs = self.process_emails()
+        self.move_emails(emails)
+        return jobs
 
 
 def get_folders():
@@ -87,16 +89,3 @@ def get_folders():
     r = requests.get('https://outlook.office365.com/api/v1.0/me/folders',
                      auth=(config.o365['email'], config.o365['password']))
     return r.json()
-
-acg_schedule = weekly_schedule('backup_jobs/acg.json')
-
-email_monitor = BackupMonitor(acg_schedule)
-#print(email_monitor.get_jobs())
-#emails = email_monitor.get_emails()
-#print(emails)
-# emails, jobs = email_monitor.process_emails()
-# print(jobs)
-#for i in emails['value']:
-#    print(i)
-#print(emails)
-#email_monitor.run()
