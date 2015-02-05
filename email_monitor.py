@@ -1,5 +1,3 @@
-from monitor import SimpleMonitor, BaseMonitor
-import monitor_manager
 import requests
 import config
 import json
@@ -14,44 +12,47 @@ folder_ids = {
 
 def weekly_schedule(schedule):
     with open(schedule) as f:
-        return (json.load(f))
+        return json.load(f)
 
 
 def get_previous_day():
     yesterday = datetime.date.today() - datetime.timedelta(1)
-    return(yesterday.strftime("%A"))
+    return yesterday.strftime("%A")
+
+
+def move_emails(emails):
+    """
+    Move each email in `emails` into the Old folder.
+    """
+    response = []
+    for email in emails:
+        data = json.dumps({'DestinationId': folder_ids['Old']})
+        headers = {'Content-Type': 'Application/Json'}
+        r = requests.post(email['@odata.id'] + '/move', data=data,
+                          auth=(config.o365['email'], config.o365['password']), headers=headers)
+        response.append(r.json())
+    return response
+
+
+def get_emails():
+    """
+    get all emails in inbox
+    """
+    r = requests.get('https://outlook.office365.com/api/v1.0/me/messages',
+                     auth=(config.o365['email'], config.o365['password']))
+    return r.json()['value']
 
 
 class BackupMonitor:
     """
     backup monitor monitors backups!
-    we have it get a weekly schedule and access a mailbox to see if we've gotten success emails for that job (backup exec.)
+    we have it get a weekly schedule and access a mailbox to see if we've gotten success emails for that job
+    (backup exec.)
     if we don't get a success email we return false. if there is an exception, we'll send that along!
     """
 
     def __init__(self, schedule):
         self.schedule = schedule
-
-    def get_emails(self):
-        """
-        get all emails in inbox
-        """
-        r = requests.get('https://outlook.office365.com/api/v1.0/me/messages',
-                         auth=(config.o365['email'], config.o365['password']))
-        return r.json()['value']
-
-    def move_emails(self, emails):
-        """
-        Move each email in `emails` into the Old folder.
-        """
-        response = []
-        for email in emails:
-            data = json.dumps({'DestinationId': folder_ids['Old']})
-            headers = {'Content-Type': 'Application/Json'}
-            r = requests.post(email['@odata.id'] + '/move', data=data,
-                              auth=(config.o365['email'], config.o365['password']), headers=headers)
-            response.append(r.json())
-        return response
 
     def get_jobs(self):
         """
@@ -67,18 +68,18 @@ class BackupMonitor:
         """
         processed_emails = []
         jobs = self.get_jobs()
-        emails = self.get_emails()
+        emails = get_emails()
         processed_jobs = {job: None for job in jobs}
         for email in emails:
             for job in jobs:
                 if job in email['Subject']:
                     processed_emails.append(email)
                     processed_jobs[job] = email['Body']['Content']
-        return processed_emails, [(k,v) for k,v in processed_jobs.items()]
+        return processed_emails, [(k, v) for k, v in processed_jobs.items()]
 
     def run(self):
         emails, jobs = self.process_emails()
-        self.move_emails(emails)
+        move_emails(emails)
         return jobs
 
 

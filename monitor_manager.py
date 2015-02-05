@@ -1,6 +1,7 @@
 # noinspection PyUnresolvedReferences
 from multiprocessing import Manager, Pipe
 
+
 class MonitorManager:
     """
     MonitorManager manages the monitors!
