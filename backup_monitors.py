@@ -3,7 +3,7 @@ import monitor
 import monitor_manager
 import time
 
-acg_schedule = email_monitor.weekly_schedule('backup_jobs/acg.json')
+acg_schedule = email_monitor.weekly_schedule('./backup_jobs/acg.json')
 e_monitor = email_monitor.BackupMonitor(acg_schedule)
 backup_monitor = monitor.SimpleMonitor()
 backup_monitor.register(e_monitor.run)
