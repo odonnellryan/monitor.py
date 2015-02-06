@@ -1,5 +1,5 @@
 # noinspection PyUnresolvedReferences
-from monitor import SimpleMonitor, BaseMonitor
+from monitors import SimpleMonitor, BaseMonitor
 import monitor_manager
 import time
 

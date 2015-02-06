@@ -43,7 +43,7 @@ def get_emails():
     return r.json()['value']
 
 
-class BackupMonitor:
+class EmailMonitor:
     """
     backup monitor monitors backups!
     we have it get a weekly schedule and access a mailbox to see if we've gotten success emails for that job
