@@ -59,7 +59,9 @@ class EmailMonitor:
         Get today's backup jobs
         """
         day = get_previous_day().lower()
-        jobs = self.schedule['daily'] + self.schedule[day]
+        jobs = self.schedule['daily']
+        if day in self.schedule:
+             jobs += self.schedule[day]
         return jobs
 
     def process_emails(self):

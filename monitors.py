@@ -48,8 +48,6 @@ class SimpleMonitor(BaseMonitor):
     """
     monitor that returns data or false.
     """
-    def __init__(self):
-        super().__init__()
 
     def register(self, data_source):
         """

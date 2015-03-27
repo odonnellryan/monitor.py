@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, g
 from email_monitor import EmailMonitor, weekly_schedule
 from monitors import SimpleMonitor
 from monitor_manager import MonitorManager
