@@ -31,7 +31,8 @@ class BaseMonitor(Process):
                 self.data = None
                 self.data = [i for func in self.data_source for i in func()]
                 # only really want to store this information if we need it?
-                if self.max_run_count: self._run_count += 1
+                if self.max_run_count: 
+                    self._run_count += 1
                 self._last_run = datetime.date.today()
             # using sleep instead of thread.Timer, we don't need a new thread for each time this is run.
             sleep(self.query_interval)
